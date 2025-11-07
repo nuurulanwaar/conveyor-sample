@@ -9,6 +9,7 @@ import logging
 from asyncio import TimeoutError
 from collections import defaultdict
 import re
+import uvicorn
 
 # --- IMPORT TOOLS ---
 from firebase_setup import (
@@ -379,4 +380,12 @@ async def webhook(request: Request):
     except Exception as e:
         await bot.send_message(chat_id, f"Error: {e}")
 
+
     return JSONResponse({"status": "ok"}, 200)
+
+
+
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
