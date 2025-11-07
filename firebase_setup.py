@@ -10,16 +10,23 @@ from datetime import datetime, timezone, timedelta
 WAT = timezone(timedelta(hours=1))  # UTC+1
 import calendar
 
-# Load environment variables
-load_dotenv()
-
-# Initialize Firebase
-service_account_path = os.getenv("FIREBASE_SERVICE_ACCOUNT_PATH")
+# === FOR RAILWAY: USE ENVIRONMENT VARIABLES DIRECTLY ===
+cred_json = os.getenv("FIREBASE_CREDENTIALS")
 database_url = os.getenv("FIREBASE_DATABASE_URL")
 
-cred = credentials.Certificate(service_account_path)
-firebase_admin.initialize_app(cred, {'databaseURL': database_url})
+if not cred_json:
+    raise ValueError("FIREBASE_CREDENTIALS not set in environment")
 
+# Parse JSON string → dict
+cred_dict = json.loads(cred_json)
+cred = credentials.Certificate(cred_dict)
+
+# Initialize Firebase
+firebase_admin.initialize_app(cred, {
+    'databaseURL': database_url
+})
+
+# Reference to root
 db_ref = db.reference('/')
 
 # Logging
@@ -358,4 +365,5 @@ def log_data_entry(db_ref, use_mock_data=False):
     Updates are disabled to rely on real production data only.
     """
     logging.info("Production updates are disabled. Relying on existing data.")
+
     return  # Explicitly do nothing to avoid writes
