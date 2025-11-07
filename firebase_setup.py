@@ -10,25 +10,38 @@ from datetime import datetime, timezone, timedelta
 WAT = timezone(timedelta(hours=1))  # UTC+1
 import calendar
 
-# === FOR RAILWAY: USE ENVIRONMENT VARIABLES DIRECTLY ===
+# firebase_setup.py
+import firebase_admin
+from firebase_admin import credentials, db
+import os
+import json
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+# === RAILWAY ENVIRONMENT VARIABLES ===
 cred_json = os.getenv("FIREBASE_CREDENTIALS")
 database_url = os.getenv("FIREBASE_DATABASE_URL")
 
 if not cred_json:
-    raise ValueError("FIREBASE_CREDENTIALS not set in environment")
+    logging.error("FIREBASE_CREDENTIALS not set!")
+    raise ValueError("FIREBASE_CREDENTIALS missing")
 
-# Parse JSON string → dict
-cred_dict = json.loads(cred_json)
-cred = credentials.Certificate(cred_dict)
+if not database_url:
+    logging.error("FIREBASE_DATABASE_URL not set!")
+    raise ValueError("FIREBASE_DATABASE_URL missing")
 
-# Initialize Firebase
-firebase_admin.initialize_app(cred, {
-    'databaseURL': database_url
-})
+try:
+    cred_dict = json.loads(cred_json)
+    cred = credentials.Certificate(cred_dict)
+    firebase_admin.initialize_app(cred, {'databaseURL': database_url})
+    logging.info("Firebase initialized successfully!")
+except Exception as e:
+    logging.error(f"Firebase init failed: {e}")
+    raise
 
-# Reference to root
+# Global reference
 db_ref = db.reference('/')
-
 # Logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -367,3 +380,4 @@ def log_data_entry(db_ref, use_mock_data=False):
     logging.info("Production updates are disabled. Relying on existing data.")
 
     return  # Explicitly do nothing to avoid writes
+
