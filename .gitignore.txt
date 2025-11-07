@@ -1,0 +1,21 @@
+# Virtual Environment
+.venv/
+venv/
+VENV/
+
+# Environment & Secrets
+.env
+*.json
+firebase_credentials.json
+serviceAccountKey.json
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs & Temp
+*.log
+*.tmp
+.DS_Store
