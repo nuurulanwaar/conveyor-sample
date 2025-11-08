@@ -369,8 +369,19 @@ async def webhook(request: Request):
         await bot.send_message(chat_id, "Please send text only.")
         return JSONResponse({"status": "ok"}, 200)
 
-    user_text = msg['text']
+    user_text = msg['text'].strip()
 
+    # REPLY IMMEDIATELY
+    await bot.send_message(chat_id, "Thinking...")
+
+    # PROCESS IN BACKGROUND (NO AWAIT)
+    asyncio.create_task(handle_message(user_text, chat_id))
+
+    return JSONResponse({"status": "ok"}, 200)
+
+
+# NEW: Background handler
+async def handle_message(user_text: str, chat_id: int):
     try:
         reply = await process_message(user_text, chat_id)
         if reply:
@@ -380,7 +391,6 @@ async def webhook(request: Request):
     except Exception as e:
         await bot.send_message(chat_id, f"Error: {e}")
 
-
     return JSONResponse({"status": "ok"}, 200)
 
 
@@ -389,3 +399,4 @@ async def webhook(request: Request):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+
