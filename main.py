@@ -10,7 +10,8 @@ from asyncio import TimeoutError
 from collections import defaultdict
 import re
 import uvicorn
-
+import re
+from calendar import month_name, month_abbr
 # --- IMPORT TOOLS ---
 from firebase_setup import (
     get_latest_conveyor_status,
@@ -222,8 +223,7 @@ async def process_message(user_query: str, chat_id: int):
 
         # === 2. NAMED MONTH REQUESTS (October, January, etc.) — PARTIAL AI ===
             # === 2. SMART MONTH DETECTION (NO LIST, FULLY DYNAMIC) ===
-    import re
-    from calendar import month_name, month_abbr
+    
 
     # Build regex: (january|jan|jan's|january's|...)
     months = [m.lower() for m in month_name[1:]] + [m.lower() for m in month_abbr[1:]]
@@ -397,5 +397,6 @@ async def process_long_task(user_text: str, chat_id: int):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  # Railway sets PORT=8080
     uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+
 
 
