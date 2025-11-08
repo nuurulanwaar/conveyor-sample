@@ -372,7 +372,7 @@ async def webhook(request: Request):
     user_text = msg['text'].strip()
 
     # SEND "THINKING..." IMMEDIATELY
-    await bot.send_message(chat_id, "Thinking...")
+    #await bot.send_message(chat_id, "Thinking...")
 
     # PROCESS IN BACKGROUND
     asyncio.create_task(process_long_task(user_text, chat_id))
@@ -397,4 +397,5 @@ async def process_long_task(user_text: str, chat_id: int):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  # Railway sets PORT=8080
     uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+
 
