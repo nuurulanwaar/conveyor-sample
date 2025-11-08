@@ -395,7 +395,6 @@ async def process_long_task(user_text: str, chat_id: int):
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
-
+    port = int(os.getenv("PORT", 8000))  # Railway sets PORT=8080
+    uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
 
