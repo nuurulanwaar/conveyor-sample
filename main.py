@@ -367,31 +367,29 @@ async def webhook(request: Request):
 
     if 'text' not in msg:
         await bot.send_message(chat_id, "Please send text only.")
-        return JSONResponse({"status": "ok"}, 200)
+        return JSONResponse({"status": "ok200"}, 200)
 
     user_text = msg['text'].strip()
 
-    # REPLY IMMEDIATELY
+    # SEND "THINKING..." IMMEDIATELY
     await bot.send_message(chat_id, "Thinking...")
 
-    # PROCESS IN BACKGROUND (NO AWAIT)
-    asyncio.create_task(handle_message(user_text, chat_id))
+    # PROCESS IN BACKGROUND
+    asyncio.create_task(process_long_task(user_text, chat_id))
 
     return JSONResponse({"status": "ok"}, 200)
 
 
-# NEW: Background handler
-async def handle_message(user_text: str, chat_id: int):
+# BACKGROUND TASK
+async def process_long_task(user_text: str, chat_id: int):
     try:
-        reply = await process_message(user_text, chat_id)
+        reply = await asyncio.wait_for(process_message(user_text, chat_id), timeout=30)
         if reply:
             await bot.send_message(chat_id, reply)
-    except TimeoutError:
+    except asyncio.TimeoutError:
         await bot.send_message(chat_id, "Timed out. Ask about production only.")
     except Exception as e:
         await bot.send_message(chat_id, f"Error: {e}")
-
-    return JSONResponse({"status": "ok"}, 200)
 
 
 
@@ -399,4 +397,5 @@ async def handle_message(user_text: str, chat_id: int):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+
 
