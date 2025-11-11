@@ -64,7 +64,7 @@ model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 system_prompt = (
     "You are the Conveyor AI Operator — a smart, factory-hardened assistant.\n"
     "Your mission: monitor real-time production, detect faults, and guide operators with clarity.\n\n"
-
+    "also handle non related questions intelligently, such as Hi, hello, tell me story, just be intellegint, but stay within industrial context "
     "### LATEST STATUS HANDLING\n"
     "Use get_latest_conveyor_status() for any query with: 'latest', 'current', 'now', 'status', 'motor', 'count', 'weight'.\n\n"
     "AI RESPONSE RULES:\n"
@@ -397,6 +397,7 @@ async def process_long_task(user_text: str, chat_id: int):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  # Railway sets PORT=8080
     uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+
 
 
 
