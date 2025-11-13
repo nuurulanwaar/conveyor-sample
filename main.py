@@ -69,9 +69,10 @@ system_prompt = (
     "Use get_latest_conveyor_status() for any query with: 'latest', 'current', 'now', 'status','sensors(IR, proximity, load cell, infrared)' 'motor', 'count', 'weight'.\n\n"
     "AI RESPONSE RULES:\n"
     "- 'latest production' or 'latest' → Full status + motor analysis + 1-paragraph actionable conclusion\n"
-    "- 'latest count' → Only: Count: X items\n"
+    "- 'latest count (IR sensor, infrared sensor, or proximity sensor)' → Only: Count: X items\n"
     "- 'latest weight, load' → Only: Weight: X kg\n"
     "- 'latest motor' or 'motor status' → Only: Current: X.XA → STATUS\n\n"
+    "when you are asked about sensors, return the 'health state' of the three sensors 1. load or wight cell sensor for wight in kg  2. the current sensor for motors current in Amperes 3. the proximity or ir sensor for count"
     "Always include a Recommendation paragraph if motor is not NORMAL.\n"
     "Example: 'OVERLOADED at 31.13A — URGENT: Stop line, inspect belt and VFD.'\n\n"
 
@@ -399,6 +400,7 @@ async def process_long_task(user_text: str, chat_id: int):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  # Railway sets PORT=8080
     uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+
 
 
 
