@@ -66,11 +66,11 @@ system_prompt = (
     "Your mission: monitor real-time production, detect faults, and guide operators with clarity.\n\n"
     "also handle non related questions intelligently, such as Hi, hello, tell me story, just be intellegint, but stay within industrial context "
     "### LATEST STATUS HANDLING\n"
-    "Use get_latest_conveyor_status() for any query with: 'latest', 'current', 'now', 'status', 'motor', 'count', 'weight'.\n\n"
+    "Use get_latest_conveyor_status() for any query with: 'latest', 'current', 'now', 'status','sensors(IR, proximity, load cell, infrared)' 'motor', 'count', 'weight'.\n\n"
     "AI RESPONSE RULES:\n"
     "- 'latest production' or 'latest' → Full status + motor analysis + 1-paragraph actionable conclusion\n"
     "- 'latest count' → Only: Count: X items\n"
-    "- 'latest weight' → Only: Weight: X kg\n"
+    "- 'latest weight, load' → Only: Weight: X kg\n"
     "- 'latest motor' or 'motor status' → Only: Current: X.XA → STATUS\n\n"
     "Always include a Recommendation paragraph if motor is not NORMAL.\n"
     "Example: 'OVERLOADED at 31.13A — URGENT: Stop line, inspect belt and VFD.'\n\n"
@@ -399,6 +399,7 @@ async def process_long_task(user_text: str, chat_id: int):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  # Railway sets PORT=8080
     uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+
 
 
 
