@@ -158,35 +158,37 @@ async def process_message(user_query: str, chat_id: int):
 
     # === 1. TIME-FILTERED REQUESTS (yesterday, hourly, month) ===
     time_keywords = {
-        "yesterday": "yesterday",
-        "hour": "hourly",
-        "hourly": "hourly",
-        "today": "hourly",
-        "month": "month",
-        "monthly": "month"
-    }
-    filter_used = None
-    for word, filter_type in time_keywords.items():
-        if word in lower_query:
-            filter_used = filter_type
-            break
+    "yesterday": "yesterday",
+    "hour": "hourly",
+    "hourly": "hourly",
+    "today": "hourly",
+    "month": "month",
+    "monthly": "month"
+}
+filter_used = None
+for word, filter_type in time_keywords.items():
+    if word in lower_query:
+        filter_used = filter_type
+        break
 
-    if filter_used:
-        limit = 1000
-        match = re.search(r'(\d+)', user_query)
-        if match:
-            limit = int(match.group(1))
+if filter_used:
+    limit = 1000
+    match = re.search(r'(\d+)', user_query)
+    if match:
+        limit = int(match.group(1))
 
-        # DEBUG LINE — PRINTS TO TERMINAL    
-        print(f"[DEBUG] Time filter: '{filter_used}' | limit: {limit} | query: '{user_query}'")
-        try:
-            # USE SORTER DIRECTLY
-            sorted_data = data_sorter(limit=limit, time_filter=filter_used)
-            logs = sorted_data.get("list", [])
+    # DEBUG LINE — PRINTS TO TERMINAL    
+    print(f"[DEBUG] Time filter: '{filter_used}' | limit: {limit} | query: '{user_query}'")
+    try:
+        # USE SORTER DIRECTLY
+        sorted_data = data_sorter(limit=limit, time_filter=filter_used)
+        logs = sorted_data.get("list", [])
 
-            if len(logs) == 0:
-                return "There was no production yesterday."
-
+        if len(logs) == 0:
+            # SMART: Use the actual keyword from query
+            used_keyword = next(word for word in time_keywords if word in lower_query)
+            return f"There was no production {used_keyword}."
+            
             # BYPASS IF >30 LOGS
             if len(logs) > 30:
                 num_batches = (len(logs) + 39) // 40
@@ -397,6 +399,7 @@ async def process_long_task(user_text: str, chat_id: int):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  # Railway sets PORT=8080
     uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+
 
 
 
